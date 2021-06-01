@@ -22,7 +22,7 @@ class Book extends Node, NodeModule
     private int $year = 1900;
     private int $pages = 2;
     private string $isbn = "";
-    private array $covers = [];
+    private array $cover = [];
     private array $nodes = [];
     protected static string $publisher = "Alpine";
 
@@ -39,9 +39,9 @@ class Book extends Node, NodeModule
         ];
     }
 
-    public function getCoversListWithLineBreakAndRemoveWhitespaces()
+    public function getcoverListWithLineBreakAndRemoveWhitespaces()
     {
-        return implode("\n", trim($this->covers));
+        return implode("\n", trim($this->cover));
     }
 
     public function setISBNFirstNumber(int $number, string $isbn)
@@ -114,7 +114,7 @@ class Book extends Node, NodeModule
     }
 
     public function returnCoverCount() {
-        return \count($this->covers);
+        return \count($this->cover);
     }
 
     public function setName(string $name) {
