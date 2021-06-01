@@ -1,16 +1,19 @@
 <?php
 /**
- * Это пример класса для некой книги.
+ * Пример класса для некой абстрактной книги.
+ * Возможно, в этом файле есть какие-то ошибки.
  *
  * Скрипт работает на следующем сервере:
  * - OC: CentOS
  * - Веб-сервер: Nginx
  * - База Данных: MySQL
- *
+ * - PHP: 7.4
  */
 
 class Book extends Node, NodeModule
 {
+    use Store;
+
     const LANG_RU = "русский";
     const LANG_EN = "английский";
 
@@ -20,35 +23,42 @@ class Book extends Node, NodeModule
     private int $pages = 2;
     private string $isbn = "";
     private array $covers = [];
+    private array $nodes = [];
     protected static string $publisher = "Alpine";
 
     public function __construct(Node $node, ?NodeModule $module)
     {
-        $nodes = [
+        $this->nodes = [
             'node' => $node,
-            'module' => $module
         ];
 
-        parent::__construct($nodes, [
-            'index' => null,
-            'first' => 0,
-            'last' => $node->returnLast(),
-        ]);
+        if ($module)
+
+        $this->nodes = [
+            'module' => $module
+        ];
     }
 
-    public function getCoversListWithLineBreak()
+    public function getCoversListWithLineBreakAndRemoveWhitespaces()
     {
-        return implode("\n", $this->covers);
+        return implode("\n", trim($this->covers));
     }
 
-    public function setISBN(string $isbn)
+    public function setISBNFirstNumber(int $number, string $isbn)
     {
-        $this->isbn = $isbn;
+        $result = $number++;
+
+        $this->isbn = $result == 5 ? 'FF'.$isbn : \rtrim($isbn);
     }
 
     public function returnISBN()
     {
         return $this->isbn;
+    }
+
+    public function callNodeModule() 
+    {
+        $this->nodes['module']->run();
     }
 
     public function getNewPartNumber(int $part_number)
@@ -81,7 +91,6 @@ class Book extends Node, NodeModule
             return 'Z' . rand(1000, 9999);
     }
 
-
     public function setBody(string $body, string $annotation="")
     {
         try {
@@ -91,25 +100,14 @@ class Book extends Node, NodeModule
         }
     }
 
-    private function addpage(
-        string $body,
-        string $annotation1='',
-        string $annotation2='',
-        string $annotation3=''
-    )
+    private function addpage(string $body, ..$annotation) 
     {
         if (!$body) {
             throw new Exception('Page w/o body');
         }
 
-        if ($annotation1) {
-            $body .= "<hr>" . $annotation1;
-        }
-        if ($annotation2) {
-            $body .= "<hr>" . $annotation2;
-        }
-        if ($annotation3) {
-            $body .= "<hr>" . $annotation3;
+        if ($annotation) {
+            $body .= "<hr>" . $annotation;
         }
 
         return $body;
@@ -129,21 +127,8 @@ class Book extends Node, NodeModule
         return self;
     }
 
-    public static function getPublisher() {
-        return self::$publisher;
-    }
-
-    public static function getMyPublisher() {
-        return static::$publisher;
-    }
-
     public function setYear(int $year): void
     {
         $this->year = $year ?? 1900;
     }
-}
-
-class MyBook extends Book
-{
-    protected static string $publisher = "Exmo";
 }
