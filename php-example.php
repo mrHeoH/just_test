@@ -118,7 +118,7 @@ class Book extends Node, NodeModule
     }
 
     public function setName(string $name) {
-        $this->name = $name;
+        $this->name = strip_tags($name);
     }
 
     public function getBook(string $name): Book
