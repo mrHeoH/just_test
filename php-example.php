@@ -23,8 +23,8 @@ class Book extends Node, NodeModule
     private int $pages = 2;
     private string $isbn = "";
     private array $cover = [];
-    private array $nodes = [];
-    protected static string $publisher = "Alpine";
+    protected array $nodes = [];
+
 
     public function __construct(Node $node, ?NodeModule $module)
     {
@@ -44,19 +44,14 @@ class Book extends Node, NodeModule
         return implode("\n", trim($this->cover));
     }
 
-    public function setISBNFirstNumber(int $number, string $isbn)
+    public function setISBNFirstLetter(int $number, string $isbn)
     {
-        $result = $number++;
+        $result = --$number + $number++;
 
-        $this->isbn = $result == 5 ? 'FF'.$isbn : \rtrim($isbn);
+        $this->isbn = $result < 10 ? 'F' . $isbn : "A" . \rtrim($isbn);
     }
 
-    public function returnISBN()
-    {
-        return $this->isbn;
-    }
-
-    public function callNodeModule() 
+    public function callNodeModule()
     {
         $this->nodes['module']->run();
     }
@@ -69,18 +64,10 @@ class Book extends Node, NodeModule
                 break;
 
             case 200:
-                $new_number = $part_number*rand(1,10) . "2";
+                $new_number = $part_number+rand(1,10) . "X";
                 break;
 
             case 300:
-                $new_number = $part_number+mt_rand()."A";
-                break;
-
-            case 400:
-                $new_number = $part_number . "X";
-                break;
-
-            case 500:
                 $new_number = "Y0" . $part_number;
                 break;
         }
@@ -100,25 +87,19 @@ class Book extends Node, NodeModule
         }
     }
 
-    private function addpage(string $body, ..$annotation) 
+    private function addpage(string $body, ..$annotation)
     {
         if (!$body) {
             throw new Exception('Page w/o body');
         }
 
-        if ($annotation) {
-            $body .= "<hr>" . $annotation;
-        }
+        $body .= "<hr>" . $annotation;
 
         return $body;
     }
 
     public function returnCoverCount() {
         return \count($this->cover);
-    }
-
-    public function setName(string $name) {
-        $this->name = strip_tags($name);
     }
 
     public function getBook(string $name): Book
