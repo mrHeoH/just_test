@@ -1,7 +1,7 @@
 <?php
 /**
- * Пример класса для некой абстрактной книги.
- * Возможно, в этом файле есть какие-то ошибки.
+ * Привет! Я написал класс абстрактной книги по нашему ТЗ!
+ * Подскажи, есть ли здесь ошибки? Может быть я что-то упустил?
  *
  * Скрипт работает на следующем сервере:
  * - OC: CentOS
@@ -10,7 +10,7 @@
  * - PHP: 7.4
  */
 
-class Book extends Node, NodeModule
+class Book extends Node, Shelf
 {
     use Store;
 
@@ -26,17 +26,12 @@ class Book extends Node, NodeModule
     protected array $nodes = [];
 
 
-    public function __construct(Node $node, ?NodeModule $module)
+    public function __construct(public string $body = ":---:", ?NodeModule $module)
     {
-        $this->nodes = [
-            'node' => $node,
-        ];
-
         if ($module)
 
-        $this->nodes = [
-            'module' => $module
-        ];
+        $node = $this->nodes[$module]->init();
+        $this->body = $node->apply($body);
     }
 
     public function getcoverListWithLineBreakAndRemoveWhitespaces()
@@ -51,9 +46,16 @@ class Book extends Node, NodeModule
         $this->isbn = $result < 10 ? 'F' . $isbn : "A" . \rtrim($isbn);
     }
 
-    public function callNodeModule()
+    public function returnBookShelfColor($book_type = 0): string
     {
-        $this->nodes['module']->run();
+        $color = match ($book_type) {
+            0 => 'Black',
+            1 => 'Blue',
+            2 => 'Red',
+            '2' => 'Red_White',
+        };
+
+        return $color;
     }
 
     public function getNewPartNumber(int $part_number)
@@ -82,8 +84,8 @@ class Book extends Node, NodeModule
     {
         try {
             $this->addpage($body, $annotation);
-        } catch (\Exception $e) {
-            return $e->getMessage();
+        } catch (\Exception) {
+            return "Wrong body.";
         }
     }
 
@@ -93,7 +95,7 @@ class Book extends Node, NodeModule
             throw new Exception('Page w/o body');
         }
 
-        $body .= "<hr>" . $annotation;
+        $this->body .= ":---:" . $annotation . "<hr>" . $body;
 
         return $body;
     }
@@ -104,7 +106,7 @@ class Book extends Node, NodeModule
 
     public function getBook(string $name): Book
     {
-        $this->name = $name;
+        $this->name = str_contains("Edward", $this->author) ? $name . ' // ' . "Ed.Book." : $name;
         return self;
     }
 
