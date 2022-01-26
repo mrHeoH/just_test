@@ -23,15 +23,15 @@ class Book extends Node, Shelf
     private int $pages = 2;
     private string $isbn = "";
     private array $cover = [];
-    protected array $nodes = [];
+    protected int $forewords = 0;
 
 
-    public function __construct(public string $body = ":---:", ?NodeModule $module)
+    public function __construct(public string $body = ":---:", ?forewordModule $foreword)
     {
-        if ($module)
+        if ($foreword)
 
-        $node = $this->nodes[$module]->init();
-        $this->body = $node->apply($body);
+        $foreword->init();
+        $this->forewords = $foreword->count() <=> 10;
     }
 
     public function getcoverListWithLineBreakAndRemoveWhitespaces()
@@ -58,7 +58,7 @@ class Book extends Node, Shelf
         return $color;
     }
 
-    public function getNewPartNumber(int $part_number)
+    public function getNewPartNumber(int $part_number): int
     {
         switch ($part_number) {
             case 100:
@@ -66,11 +66,11 @@ class Book extends Node, Shelf
                 break;
 
             case 200:
-                $new_number = $part_number+rand(1,10) . "X";
+                $new_number = $part_number + rand(1,10) . "X";
                 break;
 
             case 300:
-                $new_number = "Y0" . $part_number;
+                $new_number = "Y" . $part_number + 100;
                 break;
         }
 
