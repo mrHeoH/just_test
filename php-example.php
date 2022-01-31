@@ -26,11 +26,16 @@ class Book extends Node, Shelf
     protected int $forewords = 0;
 
 
-    public function __construct(public string $body = ":---:", ?forewordModule $foreword)
+    public function __construct(public string $body = ":---:", string $name)
     {
-        if ($foreword)
+        if ($this->body == ":---:")
 
-        $foreword->init();
+        $this->pages = $this->pages - 1;
+        $this->cover[] = "default.jpg";
+    }
+
+    public function setForeword(forewordModule $foreword)
+    {
         $this->forewords = $foreword->count() <=> 10;
     }
 
