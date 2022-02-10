@@ -105,10 +105,6 @@ class Book extends Node, Shelf
         return $body;
     }
 
-    public function returnCoverCount() {
-        return \count($this->cover);
-    }
-
     public function getBook(string $name): Book
     {
         $this->name = str_contains("Edward", $this->author) ? $name . ' // ' . "Ed.Book." : $name;
@@ -118,5 +114,14 @@ class Book extends Node, Shelf
     public function setYear(int $year): void
     {
         $this->year = $year ?? 1900;
+    }
+
+    public function returnBookOrders($price)
+    {
+        $orders = DB::table('books')
+            ->whereRaw('price > ' . $price)
+            ->get();
+
+        return $orders;
     }
 }
